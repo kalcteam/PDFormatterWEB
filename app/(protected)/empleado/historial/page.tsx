@@ -159,13 +159,13 @@ export default function HistorialPage() {
 
       {/* Topbar */}
       <div
-        className="flex items-center justify-between px-6 shrink-0 gap-4"
-        style={{ height: 48, borderBottom: "1px solid #ebe4d8", background: "#ffffff" }}
+        className="flex items-center justify-between px-4 md:px-6 shrink-0 gap-4 flex-wrap"
+        style={{ minHeight: 48, borderBottom: "1px solid #ebe4d8", background: "#ffffff", paddingTop: 8, paddingBottom: 8 }}
       >
         <span className="text-sm font-medium" style={{ color: "#1a1410" }}>Historial de actividad</span>
 
         {/* Filtros */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 overflow-x-auto">
           {FILTROS.map(f => (
             <button
               key={f.key}
@@ -187,7 +187,7 @@ export default function HistorialPage() {
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto" style={{ padding: 24, background: "#faf7f2" }}>
+      <div className="flex-1 overflow-y-auto p-4 md:p-6" style={{ background: "#faf7f2" }}>
         {Object.keys(grupos).length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <p className="text-sm" style={{ color: "#b8aea1" }}>No hay eventos para este filtro.</p>

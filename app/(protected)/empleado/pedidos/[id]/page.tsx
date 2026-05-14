@@ -432,7 +432,7 @@ export default function DetallePedidoPage() {
 
       {/* ── Topbar ── */}
       <div
-        className="flex items-center justify-between px-6 shrink-0 gap-4"
+        className="flex items-center justify-between px-4 md:px-6 shrink-0 gap-2 md:gap-4"
         style={{ height: 48, borderBottom: "1px solid #ebe4d8", background: "#ffffff" }}
       >
         {/* Breadcrumb */}
@@ -502,7 +502,7 @@ export default function DetallePedidoPage() {
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#ffffff" }}
               >
                 <Copy className="size-3.5" />
-                {duplicando ? "Duplicando…" : "Duplicar"}
+                <span className="hidden sm:inline">{duplicando ? "Duplicando…" : "Duplicar"}</span>
               </button>
 
               <button
@@ -513,7 +513,7 @@ export default function DetallePedidoPage() {
                 onMouseEnter={e => { if (!jsonOpen) (e.currentTarget as HTMLElement).style.background = "#f3eee6" }}
                 onMouseLeave={e => { if (!jsonOpen) (e.currentTarget as HTMLElement).style.background = "#ffffff" }}
               >
-                <FileJson className="size-3.5" /> Exportar JSON
+                <FileJson className="size-3.5" /><span className="hidden sm:inline"> Exportar JSON</span>
               </button>
 
               <button
@@ -524,7 +524,7 @@ export default function DetallePedidoPage() {
                 onMouseEnter={e => (e.currentTarget.style.background = "#f3eee6")}
                 onMouseLeave={e => (e.currentTarget.style.background = "#ffffff")}
               >
-                <Pencil className="size-3.5" /> Editar
+                <Pencil className="size-3.5" /><span className="hidden sm:inline"> Editar</span>
               </button>
             </>
           )}
@@ -532,10 +532,13 @@ export default function DetallePedidoPage() {
       </div>
 
       {/* ── Body ── */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-col lg:flex-row flex-1 overflow-auto lg:overflow-hidden">
 
         {/* ── Left: main content ── */}
-        <div className="flex-1 overflow-y-auto" style={{ padding: 24, borderRight: "1px solid #ebe4d8" }}>
+        <div
+          className="flex-1 overflow-y-auto p-4 md:p-6 border-b lg:border-b-0 lg:border-r"
+          style={{ borderColor: "#ebe4d8" }}
+        >
 
           {/* Hero card */}
           <div className="rounded-[16px] p-5 mb-5" style={{ background: "#ffffff", border: "1px solid #ebe4d8" }}>
@@ -570,7 +573,7 @@ export default function DetallePedidoPage() {
           <div className="rounded-[16px] p-5 mb-5" style={{ background: "#ffffff", border: "1px solid #ebe4d8" }}>
             <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#b8aea1" }}>Datos del pedido</p>
             {editMode ? (
-              <div className="grid grid-cols-3 gap-x-6 gap-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
                 {/* Nombre cliente */}
                 <div className="flex flex-col gap-1">
                   <label className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "#b8aea1" }}>Nombre cliente</label>
@@ -618,7 +621,7 @@ export default function DetallePedidoPage() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
                   <p className="text-[10px] font-medium uppercase tracking-wider mb-2" style={{ color: "#b8aea1" }}>Cliente</p>
                   <p className="text-sm font-medium mb-0.5" style={{ color: "#1a1410" }}>{pedido.nombre_cliente ?? "—"}</p>
@@ -671,7 +674,8 @@ export default function DetallePedidoPage() {
               )}
             </div>
 
-            <table className="w-full">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[480px]">
               <thead>
                 <tr style={{ background: "#ffffff", borderBottom: "1px solid #f3eee6" }}>
                   {["Ref.", "Producto", "Cant.", "P. unit.", "Importe", ...(editMode ? [""] : [])].map((h, i) => (
@@ -751,6 +755,7 @@ export default function DetallePedidoPage() {
                 )}
               </tbody>
             </table>
+            </div>
 
             {/* Totals */}
             <div className="px-5 py-4" style={{ borderTop: "1px solid #f3eee6", background: "#ffffff" }}>
@@ -780,7 +785,7 @@ export default function DetallePedidoPage() {
         </div>
 
         {/* ── Right: sidebar ── */}
-        <div className="w-72 shrink-0 overflow-y-auto flex flex-col gap-4" style={{ padding: 20 }}>
+        <div className="lg:w-72 shrink-0 overflow-y-auto flex flex-col gap-4 p-4 md:p-5">
 
           {/* Salida ERP — preview card */}
           {pedido.erp_json && (

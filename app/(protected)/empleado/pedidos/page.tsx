@@ -85,6 +85,7 @@ export default function PedidosPage() {
   const [totalMostrado, setTotalMostrado] = useState(0)
   const [busqueda, setBusqueda] = useState("")
   const [filtrosOpen, setFiltrosOpen] = useState(false)
+  const [filtrosPos,  setFiltrosPos]  = useState<{ top: number; left: number } | null>(null)
   const [fechaDesde, setFechaDesde] = useState("")
   const [fechaHasta, setFechaHasta] = useState("")
   const [confianzaFiltro, setConfianzaFiltro] = useState<Confianza | "">("")
@@ -146,6 +147,7 @@ export default function PedidosPage() {
     function handler(e: MouseEvent) {
       if (filtrosRef.current && !filtrosRef.current.contains(e.target as Node)) {
         setFiltrosOpen(false)
+        setFiltrosPos(null)
       }
     }
     if (filtrosOpen) document.addEventListener("mousedown", handler)
@@ -180,44 +182,42 @@ export default function PedidosPage() {
     <div className="flex flex-col h-full -m-6">
       {/* Topbar */}
       <div
-        className="flex items-center gap-4 px-6 shrink-0"
-        style={{ height: 48, borderBottom: "1px solid #ebe4d8", background: "#ffffff" }}
+        className="shrink-0 flex flex-col md:flex-row md:items-center gap-2 px-4 md:px-6 py-2 md:py-0"
+        style={{ minHeight: 48, borderBottom: "1px solid #ebe4d8", background: "#ffffff" }}
       >
-        {/* Left: title */}
-        <div className="flex flex-col justify-center shrink-0">
-          <span className="font-medium text-sm" style={{ color: "#1a1410" }}>Pedidos</span>
-          {stats && (
-            <span className="text-xs" style={{ color: "#847a6f" }}>
-              {stats.total} en total
-            </span>
-          )}
-        </div>
-
-        {/* Center: search */}
-        <div className="flex-1 flex justify-center">
-          <div className="relative w-full max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 pointer-events-none" style={{ color: "#b8aea1" }} />
-            <input
-              type="text"
-              placeholder="Buscar por cliente, empresa o referencia…"
-              value={busqueda}
-              onChange={e => { setBusqueda(e.target.value); setPagina(1) }}
-              className="w-full text-xs pl-8 pr-3 rounded-[10px] outline-none transition-colors"
-              style={{
-                height: 32,
-                border: "1px solid #ebe4d8",
-                background: "#faf7f2",
-                color: "#1a1410",
-              }}
-              onFocus={e => { e.currentTarget.style.borderColor = "#f57a26"; e.currentTarget.style.background = "#ffffff" }}
-              onBlur={e => { e.currentTarget.style.borderColor = "#ebe4d8"; e.currentTarget.style.background = "#faf7f2" }}
-            />
+        <div className="flex items-center justify-between md:justify-start gap-4 md:shrink-0">
+          <div className="flex flex-col justify-center">
+            <span className="font-medium text-sm" style={{ color: "#1a1410" }}>Pedidos</span>
+            {stats && <span className="text-xs" style={{ color: "#847a6f" }}>{stats.total} en total</span>}
           </div>
+          <button
+            type="button"
+            onClick={() => router.push("/empleado/pedidos/nuevo")}
+            className="flex md:hidden items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-[10px] transition-colors"
+            style={{ background: "#f57a26", color: "#ffffff" }}
+            onMouseEnter={e => (e.currentTarget.style.background = "#d96017")}
+            onMouseLeave={e => (e.currentTarget.style.background = "#f57a26")}
+          >
+            <Plus className="size-3.5" />
+          </button>
+        </div>
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 pointer-events-none" style={{ color: "#b8aea1" }} />
+          <input
+            type="text"
+            placeholder="Buscar por cliente, empresa o referencia…"
+            value={busqueda}
+            onChange={e => { setBusqueda(e.target.value); setPagina(1) }}
+            className="w-full text-xs pl-8 pr-3 rounded-[10px] outline-none transition-colors"
+            style={{ height: 32, border: "1px solid #ebe4d8", background: "#faf7f2", color: "#1a1410" }}
+            onFocus={e => { e.currentTarget.style.borderColor = "#f57a26"; e.currentTarget.style.background = "#ffffff" }}
+            onBlur={e => { e.currentTarget.style.borderColor = "#ebe4d8"; e.currentTarget.style.background = "#faf7f2" }}
+          />
         </div>
         <button
           type="button"
           onClick={() => router.push("/empleado/pedidos/nuevo")}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-[10px] transition-colors"
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-[10px] transition-colors shrink-0"
           style={{ background: "#f57a26", color: "#ffffff" }}
           onMouseEnter={e => (e.currentTarget.style.background = "#d96017")}
           onMouseLeave={e => (e.currentTarget.style.background = "#f57a26")}
@@ -226,10 +226,10 @@ export default function PedidosPage() {
         </button>
       </div>
 
-      <div className="flex-1 overflow-auto" style={{ padding: "24px" }}>
+      <div className="flex-1 overflow-auto p-4 md:p-6">
         {/* Stats cards */}
         {stats && (
-          <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
             {[
               { label: "Pedidos totales",       value: stats.total,       sub: "+8 esta semana",       subColor: "#2a8a5d" },
               { label: "Confirmados",            value: stats.confirmados, sub: `${Math.round(stats.confirmados/stats.total*100)}% del total`, subColor: "#847a6f" },
@@ -251,10 +251,10 @@ export default function PedidosPage() {
 
         {/* Filter bar */}
         <div
-          className="flex items-center justify-between mb-4 px-4 py-2 rounded-[12px]"
+          className="flex flex-wrap items-center justify-between gap-2 mb-4 px-3 md:px-4 py-2 rounded-[12px]"
           style={{ background: "#ffffff", border: "1px solid #ebe4d8" }}
         >
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 overflow-x-auto">
             <span className="text-xs mr-2" style={{ color: "#847a6f" }}>Estado:</span>
             {filtrosTabs.map(f => (
               <button
@@ -291,7 +291,14 @@ export default function PedidosPage() {
             <div className="relative" ref={filtrosRef}>
               <button
                 type="button"
-                onClick={() => setFiltrosOpen(o => !o)}
+                onClick={e => {
+                  if (filtrosOpen) { setFiltrosOpen(false); setFiltrosPos(null); return }
+                  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                  const W = 320 // dropdown width
+                  const left = Math.max(8, Math.min(rect.right - W, window.innerWidth - W - 8))
+                  setFiltrosPos({ top: rect.bottom + 6, left })
+                  setFiltrosOpen(true)
+                }}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-[8px] transition-colors"
                 style={{
                   border: `1px solid ${filtrosOpen || filtrosActivosCount > 0 ? "#f57a26" : "#ebe4d8"}`,
@@ -310,10 +317,18 @@ export default function PedidosPage() {
                 )}
               </button>
 
-              {filtrosOpen && (
+              {filtrosOpen && filtrosPos && (
                 <div
-                  className="absolute right-0 z-50 mt-2 w-80 rounded-[16px]"
-                  style={{ background: "#ffffff", border: "1px solid #ebe4d8", boxShadow: "0 8px 24px rgba(26,20,16,0.10), 0 2px 6px rgba(26,20,16,0.06)" }}
+                  className="rounded-[16px] w-80 max-w-[calc(100vw-1rem)]"
+                  style={{
+                    position: "fixed",
+                    top: filtrosPos.top,
+                    left: filtrosPos.left,
+                    zIndex: 200,
+                    background: "#ffffff",
+                    border: "1px solid #ebe4d8",
+                    boxShadow: "0 8px 24px rgba(26,20,16,0.10), 0 2px 6px rgba(26,20,16,0.06)",
+                  }}
                 >
                   {/* Header */}
                   <div className="flex items-center justify-between px-4 pt-4 pb-3">
@@ -330,7 +345,7 @@ export default function PedidosPage() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => setFiltrosOpen(false)}
+                      onClick={() => { setFiltrosOpen(false); setFiltrosPos(null) }}
                       className="size-6 flex items-center justify-center rounded-[7px] transition-colors"
                       style={{ color: "#b8aea1", background: "transparent" }}
                       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#f3eee6" }}
@@ -433,7 +448,7 @@ export default function PedidosPage() {
                       )}
                       <button
                         type="button"
-                        onClick={() => setFiltrosOpen(false)}
+                        onClick={() => { setFiltrosOpen(false); setFiltrosPos(null) }}
                         className="flex-1 py-2 text-xs font-medium rounded-[10px] transition-colors"
                         style={{ background: "#f57a26", color: "#ffffff" }}
                         onMouseEnter={e => (e.currentTarget.style.background = "#d96017")}
@@ -451,7 +466,8 @@ export default function PedidosPage() {
 
         {/* Table */}
         <div className="rounded-[14px] overflow-hidden" style={{ border: "1px solid #ebe4d8" }}>
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px]">
             <thead>
               <tr style={{ background: "#faf7f2", borderBottom: "1px solid #ebe4d8" }}>
                 {["ID / Cliente", "Empresa", "Fecha pedido", "Productos", "Estado", "Confianza IA", "Procesado"].map(h => (
@@ -517,6 +533,7 @@ export default function PedidosPage() {
               )}
             </tbody>
           </table>
+          </div>
         </div>
 
         {/* Pagination */}

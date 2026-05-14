@@ -105,9 +105,19 @@ export function ExtraccionIaPanel({ loading, datos, onConfirmar }: Props) {
 
   const { fields, append, remove } = useFieldArray({ control, name: "productos" })
 
-  const [openMenu, setOpenMenu] = useState<number | null>(null)
-  const [editRows, setEditRows] = useState<Set<number>>(new Set())
-  const [snapshots, setSnapshots] = useState<Record<number, PedidoFormValues["productos"][number]>>({})
+  const [openMenu, setOpenMenu]     = useState<number | null>(null)
+  const [menuPos,  setMenuPos]      = useState<{ top: number; right: number } | null>(null)
+  const [editRows, setEditRows]     = useState<Set<number>>(new Set())
+  const [snapshots, setSnapshots]   = useState<Record<number, PedidoFormValues["productos"][number]>>({})
+
+  // Close menu on scroll or resize so it doesn't go stale
+  useEffect(() => {
+    if (openMenu === null) return
+    const close = () => { setOpenMenu(null); setMenuPos(null) }
+    window.addEventListener("scroll", close, true)
+    window.addEventListener("resize", close)
+    return () => { window.removeEventListener("scroll", close, true); window.removeEventListener("resize", close) }
+  }, [openMenu])
 
   function startEdit(i: number) {
     const current = productos[i]
@@ -278,7 +288,8 @@ export function ExtraccionIaPanel({ loading, datos, onConfirmar }: Props) {
           </div>
 
           {/* Table */}
-          <div className="rounded-[12px] overflow-visible" style={{ border: "1px solid #ebe4d8", background: "#ffffff" }}>
+          <div className="rounded-[12px] overflow-x-auto" style={{ border: "1px solid #ebe4d8", background: "#ffffff" }}>
+          <div style={{ minWidth: 400 }}>
 
             {/* Head */}
             <div
@@ -382,45 +393,24 @@ export function ExtraccionIaPanel({ loading, datos, onConfirmar }: Props) {
                         </button>
                       </div>
                     ) : (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => setOpenMenu(openMenu === i ? null : i)}
-                          className="flex items-center justify-center size-6 rounded-[6px] transition-colors"
-                          style={{ color: "#b8aea1" }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#f3eee6"; (e.currentTarget as HTMLElement).style.color = "#4a423b" }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "#b8aea1" }}
-                        >
-                          <MoreHorizontal className="size-3.5" />
-                        </button>
-                        {openMenu === i && (
-                          <div
-                            className="absolute right-0 top-7 z-10 rounded-[10px] py-1 min-w-[130px]"
-                            style={{ background: "#ffffff", border: "1px solid #ebe4d8", boxShadow: "0 4px 14px rgba(26,20,16,0.08)" }}
-                          >
-                            <button
-                              type="button"
-                              onClick={() => startEdit(i)}
-                              className="flex items-center gap-2 w-full px-3 py-1.5 text-xs transition-colors"
-                              style={{ color: "#1a1410" }}
-                              onMouseEnter={e => (e.currentTarget.style.background = "#f3eee6")}
-                              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                            >
-                              <Pencil className="size-3" /> Editar línea
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveRow(i)}
-                              className="flex items-center gap-2 w-full px-3 py-1.5 text-xs transition-colors"
-                              style={{ color: "#a83828" }}
-                              onMouseEnter={e => (e.currentTarget.style.background = "#fdf0ee")}
-                              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                            >
-                              <Trash2 className="size-3" /> Eliminar línea
-                            </button>
-                          </div>
-                        )}
-                      </>
+                      <button
+                        type="button"
+                        onClick={e => {
+                          e.stopPropagation()
+                          if (openMenu === i) { setOpenMenu(null); setMenuPos(null); return }
+                          const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                          const right = Math.max(8, window.innerWidth - rect.right)
+                          const top   = rect.bottom + 4
+                          setMenuPos({ top, right })
+                          setOpenMenu(i)
+                        }}
+                        className="flex items-center justify-center size-6 rounded-[6px] transition-colors"
+                        style={{ color: "#b8aea1" }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#f3eee6"; (e.currentTarget as HTMLElement).style.color = "#4a423b" }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "#b8aea1" }}
+                      >
+                        <MoreHorizontal className="size-3.5" />
+                      </button>
                     )}
                   </div>
                 </div>
@@ -437,10 +427,49 @@ export function ExtraccionIaPanel({ loading, datos, onConfirmar }: Props) {
                 <span className="text-sm font-semibold" style={{ color: "#1a1410" }}>{formatPrice(total)}</span>
               </div>
             )}
-          </div>
+          </div>{/* end minWidth wrapper */}
+          </div>{/* end table outer */}
         </div>
 
       </div>
+
+      {/* Row dropdown — rendered outside overflow containers, position: fixed */}
+      {openMenu !== null && menuPos && (
+        <div
+          className="rounded-[10px] py-1 min-w-[130px]"
+          style={{
+            position: "fixed",
+            top: menuPos.top,
+            right: menuPos.right,
+            zIndex: 200,
+            background: "#ffffff",
+            border: "1px solid #ebe4d8",
+            boxShadow: "0 4px 14px rgba(26,20,16,0.08)",
+          }}
+          onClick={e => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            onClick={() => { startEdit(openMenu); setMenuPos(null) }}
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-xs transition-colors"
+            style={{ color: "#1a1410" }}
+            onMouseEnter={e => (e.currentTarget.style.background = "#f3eee6")}
+            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+          >
+            <Pencil className="size-3" /> Editar línea
+          </button>
+          <button
+            type="button"
+            onClick={() => { handleRemoveRow(openMenu); setMenuPos(null) }}
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-xs transition-colors"
+            style={{ color: "#a83828" }}
+            onMouseEnter={e => (e.currentTarget.style.background = "#fdf0ee")}
+            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+          >
+            <Trash2 className="size-3" /> Eliminar línea
+          </button>
+        </div>
+      )}
     </form>
   )
 }

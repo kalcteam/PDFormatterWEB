@@ -149,7 +149,7 @@ export default function NuevoPedidoPage() {
     <div className="flex flex-col h-full -m-6">
       {/* Topbar */}
       <div
-        className="flex items-center justify-between px-6 shrink-0"
+        className="flex items-center justify-between px-4 md:px-6 shrink-0"
         style={{ height: 48, borderBottom: "1px solid #ebe4d8", background: "#ffffff" }}
       >
         {/* Breadcrumb + estado */}
@@ -196,12 +196,12 @@ export default function NuevoPedidoPage() {
       </div>
 
       {/* Two panels */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-col md:flex-row flex-1 overflow-auto md:overflow-hidden">
 
         {/* ── Panel izquierdo: PDF ── */}
         <div
-          className="w-1/2 flex flex-col overflow-hidden"
-          style={{ padding: 20, borderRight: "1px solid #ebe4d8" }}
+          className="md:w-1/2 flex flex-col md:overflow-hidden"
+          style={{ padding: 16, borderBottom: "1px solid #ebe4d8", minHeight: 280 }}
         >
           {!pdfFile ? (
             <div
@@ -266,7 +266,7 @@ export default function NuevoPedidoPage() {
         </div>
 
         {/* ── Panel derecho: IA ── */}
-        <div className="w-1/2 flex flex-col overflow-hidden" style={{ padding: 20 }}>
+        <div className="md:w-1/2 flex flex-col md:overflow-hidden" style={{ padding: 16 }}>
           {estado === "idle" && !datos ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center">
               <div className="size-12 rounded-full flex items-center justify-center" style={{ background: "#f3eee6" }}>
