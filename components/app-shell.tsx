@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { FileText, History, Users, Download, LogOut, Menu, X } from "lucide-react"
+import { FileText, ShoppingBag, History, Users, Download, LogOut, Menu, X } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { clearAuth, getCurrentUser } from "@/lib/auth-simple"
@@ -14,7 +14,8 @@ const navAdmin = [
 
 const navEmpleado = [
   { href: "/empleado/pedidos/nuevo", label: "Nuevo pedido", icon: FileText },
-  { href: "/empleado/pedidos",       label: "Historial",     icon: History },
+  { href: "/empleado/pedidos",       label: "Mis pedidos",  icon: ShoppingBag },
+  { href: "/empleado/historial",     label: "Historial",    icon: History },
 ]
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -37,11 +38,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const sidebar = (
     <aside
       className="flex flex-col h-full"
-      style={{ width: 232, background: "#faf7f2", borderRight: "1px solid #ebe4d8", padding: "20px 12px" }}
+      style={{
+        width: 232,
+        background: "rgba(255, 253, 250, 0.65)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderRight: "1px solid rgba(235, 228, 216, 0.5)",
+        boxShadow: "1px 0 24px 0 rgba(26, 20, 16, 0.04)",
+        padding: "20px 12px",
+      }}
     >
       {/* Logo */}
-      <div className="px-3 mb-6">
-        <span className="text-base font-semibold" style={{ color: "#1a1410" }}>PDFormatter</span>
+      <div className="px-3 mb-6 flex items-center gap-2.5">
+        <div
+          className="size-8 rounded-[9px] flex items-center justify-center shrink-0"
+          style={{ background: "rgba(245, 122, 38, 0.1)", border: "1px solid rgba(245, 122, 38, 0.2)" }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="1" width="9" height="12" rx="1.5" stroke="#f57a26" strokeWidth="1.25"/>
+            <path d="M5 5h5M5 7.5h5M5 10h3" stroke="#f57a26" strokeWidth="1.1" strokeLinecap="round"/>
+            <circle cx="12.5" cy="11.5" r="2.5" fill="rgba(245,122,38,0.15)" stroke="#f57a26" strokeWidth="1.1"/>
+            <path d="M11.5 11.5l.8.8 1.2-1.2" stroke="#f57a26" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <div className="flex flex-col leading-none">
+          <span className="text-sm font-semibold tracking-tight" style={{ color: "#1a1410" }}>PDFormatter</span>
+          <span className="text-[10px] mt-0.5" style={{ color: "#b8aea1" }}>Gestión de pedidos</span>
+        </div>
       </div>
 
       {/* Nav */}
@@ -55,10 +78,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               onClick={() => setOpen(false)}
               className="flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-sm font-medium transition-colors"
               style={{
-                background:  active ? "#f57a26" : "transparent",
-                color:       active ? "#ffffff" : "#4a423b",
+                background:  active ? "rgba(245, 122, 38, 0.07)" : "transparent",
+                color:       active ? "#c4622a" : "#4a423b",
               }}
-              onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = "#f3eee6" }}
+              onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = "rgba(235, 228, 216, 0.5)" }}
               onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = "transparent" }}
             >
               <Icon className="size-4 shrink-0" />
@@ -69,7 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* Usuario */}
-      <div style={{ borderTop: "1px solid #ebe4d8", paddingTop: 16, marginTop: 8 }}>
+      <div style={{ borderTop: "1px solid rgba(235, 228, 216, 0.5)", paddingTop: 16, marginTop: 8 }}>
         <div className="flex items-center gap-2.5 px-3 mb-2">
           <div
             className="size-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0"
@@ -86,7 +109,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           onClick={handleLogout}
           className="flex w-full items-center gap-2.5 px-3 py-1.5 rounded-[10px] text-sm transition-colors"
           style={{ color: "#847a6f" }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#f3eee6" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(235, 228, 216, 0.5)" }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}
         >
           <LogOut className="size-4" />

@@ -673,7 +673,7 @@ export default function DetallePedidoPage() {
 
             <table className="w-full">
               <thead>
-                <tr style={{ background: "#faf7f2", borderBottom: "1px solid #f3eee6" }}>
+                <tr style={{ background: "#ffffff", borderBottom: "1px solid #f3eee6" }}>
                   {["Ref.", "Producto", "Cant.", "P. unit.", "Importe", ...(editMode ? [""] : [])].map((h, i) => (
                     <th
                       key={h + i}
@@ -753,7 +753,7 @@ export default function DetallePedidoPage() {
             </table>
 
             {/* Totals */}
-            <div className="px-5 py-4" style={{ borderTop: "1px solid #f3eee6", background: "#faf7f2" }}>
+            <div className="px-5 py-4" style={{ borderTop: "1px solid #f3eee6", background: "#ffffff" }}>
               <div className="flex flex-col gap-1.5 items-end">
                 <div className="flex items-center gap-8">
                   <span className="text-xs" style={{ color: "#847a6f" }}>Subtotal</span>
@@ -781,6 +781,40 @@ export default function DetallePedidoPage() {
 
         {/* ── Right: sidebar ── */}
         <div className="w-72 shrink-0 overflow-y-auto flex flex-col gap-4" style={{ padding: 20 }}>
+
+          {/* Salida ERP — preview card */}
+          {pedido.erp_json && (
+            <button
+              type="button"
+              onClick={() => setJsonOpen(true)}
+              className="w-full text-left rounded-[14px] overflow-hidden transition-opacity"
+              style={{ border: "1px solid #2e2620", background: "#161210", opacity: 1 }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+              onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
+            >
+              {/* Mini header */}
+              <div className="flex items-center justify-between px-3.5 py-2.5" style={{ borderBottom: "1px solid #2e2620" }}>
+                <div className="flex items-center gap-1.5">
+                  <FileJson className="size-3.5" style={{ color: "#f57a26" }} />
+                  <span className="text-xs font-medium" style={{ color: "#d4c9bb" }}>Salida ERP</span>
+                </div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "#2e2620", color: "#847a6f" }}>JSON · ver</span>
+              </div>
+              {/* Preview of first lines */}
+              <pre
+                className="text-[10px] px-3.5 py-2.5 leading-relaxed overflow-hidden"
+                style={{
+                  color: "#6b5e54",
+                  fontFamily: "ui-monospace, monospace",
+                  maxHeight: 64,
+                  maskImage: "linear-gradient(to bottom, #161210 40%, transparent 100%)",
+                  WebkitMaskImage: "linear-gradient(to bottom, #161210 40%, transparent 100%)",
+                }}
+              >
+                {pedido.erp_json}
+              </pre>
+            </button>
+          )}
 
           {/* Timeline */}
           <div className="rounded-[14px] p-4" style={{ background: "#ffffff", border: "1px solid #ebe4d8" }}>
@@ -836,40 +870,6 @@ export default function DetallePedidoPage() {
             <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#b8aea1" }}>Procesado por</p>
             <p className="text-xs" style={{ color: "#4a423b" }}>{pedido.procesado_por ?? "—"}</p>
           </div>
-
-          {/* Salida ERP — preview card */}
-          {pedido.erp_json && (
-            <button
-              type="button"
-              onClick={() => setJsonOpen(true)}
-              className="w-full text-left rounded-[14px] overflow-hidden transition-opacity"
-              style={{ border: "1px solid #2e2620", background: "#161210", opacity: 1 }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
-              onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
-            >
-              {/* Mini header */}
-              <div className="flex items-center justify-between px-3.5 py-2.5" style={{ borderBottom: "1px solid #2e2620" }}>
-                <div className="flex items-center gap-1.5">
-                  <FileJson className="size-3.5" style={{ color: "#f57a26" }} />
-                  <span className="text-xs font-medium" style={{ color: "#d4c9bb" }}>Salida ERP</span>
-                </div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "#2e2620", color: "#847a6f" }}>JSON · ver</span>
-              </div>
-              {/* Preview of first lines */}
-              <pre
-                className="text-[10px] px-3.5 py-2.5 leading-relaxed overflow-hidden"
-                style={{
-                  color: "#6b5e54",
-                  fontFamily: "ui-monospace, monospace",
-                  maxHeight: 64,
-                  maskImage: "linear-gradient(to bottom, #161210 40%, transparent 100%)",
-                  WebkitMaskImage: "linear-gradient(to bottom, #161210 40%, transparent 100%)",
-                }}
-              >
-                {pedido.erp_json}
-              </pre>
-            </button>
-          )}
 
         </div>{/* end right sidebar */}
       </div>
