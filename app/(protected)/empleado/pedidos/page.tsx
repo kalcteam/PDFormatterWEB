@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ChevronLeft, ChevronRight, SlidersHorizontal, Search } from "lucide-react"
+import { Plus, ChevronLeft, ChevronRight, SlidersHorizontal, Search, CalendarDays, Sparkles, X } from "lucide-react"
 import { getToken } from "@/lib/auth-simple"
 import { formatDate } from "@/lib/utils"
 import { IaConfianzaBadge, type Confianza } from "@/components/ia-confidence-badge"
@@ -312,92 +312,136 @@ export default function PedidosPage() {
 
               {filtrosOpen && (
                 <div
-                  className="absolute right-0 z-50 mt-2 w-72 rounded-[14px] shadow-lg"
-                  style={{ background: "#ffffff", border: "1px solid #ebe4d8", boxShadow: "0 4px 14px rgba(26,20,16,0.08), 0 1px 3px rgba(26,20,16,0.05)" }}
+                  className="absolute right-0 z-50 mt-2 w-80 rounded-[16px]"
+                  style={{ background: "#ffffff", border: "1px solid #ebe4d8", boxShadow: "0 8px 24px rgba(26,20,16,0.10), 0 2px 6px rgba(26,20,16,0.06)" }}
                 >
                   {/* Header */}
-                  <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid #f3eee6" }}>
-                    <span className="text-xs font-medium" style={{ color: "#1a1410" }}>Filtros avanzados</span>
-                    {filtrosActivosCount > 0 && (
-                      <button
-                        type="button"
-                        onClick={limpiarFiltrosExtra}
-                        className="text-xs"
-                        style={{ color: "#f57a26" }}
-                      >
-                        Limpiar todo
-                      </button>
-                    )}
+                  <div className="flex items-center justify-between px-4 pt-4 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="size-6 rounded-[7px] flex items-center justify-center" style={{ background: "#f3eee6" }}>
+                        <SlidersHorizontal className="size-3.5" style={{ color: "#f57a26" }} />
+                      </div>
+                      <span className="text-sm font-semibold" style={{ color: "#1a1410" }}>Filtros</span>
+                      {filtrosActivosCount > 0 && (
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: "#f57a26", color: "#fff" }}>
+                          {filtrosActivosCount}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFiltrosOpen(false)}
+                      className="size-6 flex items-center justify-center rounded-[7px] transition-colors"
+                      style={{ color: "#b8aea1", background: "transparent" }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#f3eee6" }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}
+                    >
+                      <X className="size-3.5" />
+                    </button>
                   </div>
 
-                  <div className="p-4 flex flex-col gap-4">
-                    {/* Fecha desde / hasta */}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-medium uppercase tracking-wider" style={{ color: "#847a6f" }}>Rango de fechas</label>
-                      <div className="flex gap-2">
-                        <div className="flex-1">
-                          <p className="text-[10px] mb-1" style={{ color: "#b8aea1" }}>Desde</p>
+                  <div className="px-4 pb-4 flex flex-col gap-5">
+                    {/* Divider */}
+                    <div style={{ height: 1, background: "#f3eee6" }} />
+
+                    {/* Rango de fechas */}
+                    <div className="flex flex-col gap-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <CalendarDays className="size-3.5" style={{ color: "#b8aea1" }} />
+                        <span className="text-xs font-semibold" style={{ color: "#4a423b" }}>Rango de fechas</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="flex flex-col gap-1">
+                          <p className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "#b8aea1" }}>Desde</p>
                           <input
                             type="date"
                             value={fechaDesde}
                             onChange={e => { setFechaDesde(e.target.value); setPagina(1) }}
-                            className="w-full text-xs px-2 py-1.5 rounded-[8px] outline-none"
+                            className="w-full text-xs px-2.5 py-2 rounded-[10px] outline-none"
                             style={{ border: "1px solid #ebe4d8", background: "#faf7f2", color: "#1a1410" }}
-                            onFocus={e => { e.currentTarget.style.borderColor = "#f57a26" }}
-                            onBlur={e => { e.currentTarget.style.borderColor = "#ebe4d8" }}
+                            onFocus={e => { e.currentTarget.style.borderColor = "#f57a26"; e.currentTarget.style.background = "#fff" }}
+                            onBlur={e => { e.currentTarget.style.borderColor = "#ebe4d8"; e.currentTarget.style.background = "#faf7f2" }}
                           />
                         </div>
-                        <div className="flex-1">
-                          <p className="text-[10px] mb-1" style={{ color: "#b8aea1" }}>Hasta</p>
+                        <div className="flex flex-col gap-1">
+                          <p className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "#b8aea1" }}>Hasta</p>
                           <input
                             type="date"
                             value={fechaHasta}
                             onChange={e => { setFechaHasta(e.target.value); setPagina(1) }}
-                            className="w-full text-xs px-2 py-1.5 rounded-[8px] outline-none"
+                            className="w-full text-xs px-2.5 py-2 rounded-[10px] outline-none"
                             style={{ border: "1px solid #ebe4d8", background: "#faf7f2", color: "#1a1410" }}
-                            onFocus={e => { e.currentTarget.style.borderColor = "#f57a26" }}
-                            onBlur={e => { e.currentTarget.style.borderColor = "#ebe4d8" }}
+                            onFocus={e => { e.currentTarget.style.borderColor = "#f57a26"; e.currentTarget.style.background = "#fff" }}
+                            onBlur={e => { e.currentTarget.style.borderColor = "#ebe4d8"; e.currentTarget.style.background = "#faf7f2" }}
                           />
                         </div>
                       </div>
                     </div>
 
+                    {/* Divider */}
+                    <div style={{ height: 1, background: "#f3eee6" }} />
+
                     {/* Confianza IA */}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-medium uppercase tracking-wider" style={{ color: "#847a6f" }}>Confianza IA</label>
-                      <div className="flex gap-1.5">
-                        {(["", "alta", "media", "baja"] as const).map(c => (
-                          <button
-                            key={c}
-                            type="button"
-                            onClick={() => { setConfianzaFiltro(c as Confianza | ""); setPagina(1) }}
-                            className="flex-1 py-1.5 text-xs rounded-[8px] transition-colors"
-                            style={{
-                              border: `1px solid ${confianzaFiltro === c ? "#f57a26" : "#ebe4d8"}`,
-                              background: confianzaFiltro === c ? "#fff5ec" : "#faf7f2",
-                              color: confianzaFiltro === c ? "#f57a26" : "#4a423b",
-                              fontWeight: confianzaFiltro === c ? 500 : 400,
-                            }}
-                          >
-                            {c === "" ? "Todas" : c.charAt(0).toUpperCase() + c.slice(1)}
-                          </button>
-                        ))}
+                    <div className="flex flex-col gap-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <Sparkles className="size-3.5" style={{ color: "#b8aea1" }} />
+                        <span className="text-xs font-semibold" style={{ color: "#4a423b" }}>Confianza IA</span>
+                      </div>
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {([
+                          { value: "",      label: "Todas",  activeBg: "#f3eee6",  activeColor: "#4a423b",  dot: null },
+                          { value: "alta",  label: "Alta",   activeBg: "#e7f5ee",  activeColor: "#2a8a5d",  dot: "#2a8a5d" },
+                          { value: "media", label: "Media",  activeBg: "#fbf1d9",  activeColor: "#b07a12",  dot: "#b07a12" },
+                          { value: "baja",  label: "Baja",   activeBg: "#fbe9e6",  activeColor: "#c0382a",  dot: "#c0382a" },
+                        ] as const).map(c => {
+                          const active = confianzaFiltro === c.value
+                          return (
+                            <button
+                              key={c.value}
+                              type="button"
+                              onClick={() => { setConfianzaFiltro(c.value as Confianza | ""); setPagina(1) }}
+                              className="flex flex-col items-center gap-1 py-2 rounded-[10px] transition-colors"
+                              style={{
+                                border: `1px solid ${active ? (c.dot ?? "#ebe4d8") : "#ebe4d8"}`,
+                                background: active ? c.activeBg : "#faf7f2",
+                                color: active ? c.activeColor : "#847a6f",
+                              }}
+                            >
+                              {c.dot && (
+                                <span className="size-2 rounded-full" style={{ background: c.dot, opacity: active ? 1 : 0.35 }} />
+                              )}
+                              <span className="text-[11px] font-medium">{c.label}</span>
+                            </button>
+                          )
+                        })}
                       </div>
                     </div>
-                  </div>
 
-                  {/* Footer */}
-                  <div className="px-4 py-3" style={{ borderTop: "1px solid #f3eee6" }}>
-                    <button
-                      type="button"
-                      onClick={() => setFiltrosOpen(false)}
-                      className="w-full py-2 text-xs font-medium rounded-[10px] transition-colors"
-                      style={{ background: "#f57a26", color: "#ffffff" }}
-                      onMouseEnter={e => (e.currentTarget.style.background = "#d96017")}
-                      onMouseLeave={e => (e.currentTarget.style.background = "#f57a26")}
-                    >
-                      Aplicar filtros
-                    </button>
+                    {/* Actions */}
+                    <div className="flex gap-2 pt-1">
+                      {filtrosActivosCount > 0 && (
+                        <button
+                          type="button"
+                          onClick={limpiarFiltrosExtra}
+                          className="flex-1 py-2 text-xs font-medium rounded-[10px] transition-colors"
+                          style={{ border: "1px solid #ebe4d8", background: "#ffffff", color: "#4a423b" }}
+                          onMouseEnter={e => (e.currentTarget.style.background = "#f3eee6")}
+                          onMouseLeave={e => (e.currentTarget.style.background = "#ffffff")}
+                        >
+                          Limpiar
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setFiltrosOpen(false)}
+                        className="flex-1 py-2 text-xs font-medium rounded-[10px] transition-colors"
+                        style={{ background: "#f57a26", color: "#ffffff" }}
+                        onMouseEnter={e => (e.currentTarget.style.background = "#d96017")}
+                        onMouseLeave={e => (e.currentTarget.style.background = "#f57a26")}
+                      >
+                        Aplicar
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
