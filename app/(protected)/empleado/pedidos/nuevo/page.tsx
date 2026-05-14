@@ -152,19 +152,47 @@ export default function NuevoPedidoPage() {
         className="flex items-center justify-between px-6 shrink-0"
         style={{ height: 48, borderBottom: "1px solid #ebe4d8", background: "#ffffff" }}
       >
+        {/* Breadcrumb + estado */}
         <div className="flex items-center gap-1.5 text-sm">
           <span style={{ color: "#b8aea1" }}>Pedidos</span>
           <span style={{ color: "#ddd4c4" }}>/</span>
           <span className="font-medium" style={{ color: "#1a1410" }}>Nuevo pedido</span>
           {processingTime && (
             <span
-              className="text-xs px-2 py-0.5 rounded-full ml-2"
+              className="flex items-center gap-1.5 text-xs px-2 py-0.5 rounded-full ml-2"
               style={{ background: "#f3eee6", color: "#847a6f" }}
             >
+              <span className="size-1.5 rounded-full shrink-0" style={{ background: "#2a8a5d" }} />
               Procesado en {processingTime}
             </span>
           )}
         </div>
+
+        {/* Acciones — solo visibles cuando hay datos */}
+        {datos && (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleDescartar}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-[10px] transition-colors"
+              style={{ border: "1px solid #ebe4d8", background: "#ffffff", color: "#4a423b" }}
+              onMouseEnter={e => (e.currentTarget.style.background = "#f3eee6")}
+              onMouseLeave={e => (e.currentTarget.style.background = "#ffffff")}
+            >
+              ✕ Descartar
+            </button>
+            <button
+              type="button"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-[10px] transition-colors"
+              style={{ background: estado === "confirming" ? "#ddd4c4" : "#f57a26", color: "#ffffff", cursor: estado === "confirming" ? "not-allowed" : "pointer" }}
+              onMouseEnter={e => { if (estado !== "confirming") (e.currentTarget as HTMLElement).style.background = "#d96017" }}
+              onMouseLeave={e => { if (estado !== "confirming") (e.currentTarget as HTMLElement).style.background = "#f57a26" }}
+              onClick={() => document.getElementById("pedido-form")?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }))}
+            >
+              ✓ Confirmar pedido
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Two panels */}
@@ -254,8 +282,6 @@ export default function NuevoPedidoPage() {
               loading={isProcessing}
               datos={datos ?? undefined}
               onConfirmar={handleConfirmar}
-              onDescartar={handleDescartar}
-              confirming={estado === "confirming"}
             />
           )}
         </div>

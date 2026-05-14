@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import { Document, Page, pdfjs } from "react-pdf"
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download } from "lucide-react"
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -46,33 +46,52 @@ export function PdfViewer({
   return (
     <div className={cn("flex flex-col h-full", className)}>
       {/* Header */}
-      <div className="flex flex-col gap-2 pb-3 border-b border-border">
-        <div className="flex items-start justify-between gap-2">
+      <div className="flex items-center justify-between gap-3 pb-3" style={{ borderBottom: "1px solid #ebe4d8" }}>
+        {/* Left: PDF icon + name + metadata */}
+        <div className="flex items-center gap-3 min-w-0">
+          <div
+            className="shrink-0 size-10 rounded-[10px] flex items-center justify-center text-[10px] font-bold tracking-wide"
+            style={{ background: "#ffd0a8", color: "#5a2706" }}
+          >
+            PDF
+          </div>
           <div className="min-w-0">
-            <p className="text-sm font-medium truncate">{fileName ?? "documento.pdf"}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {[fileSize, numPages > 0 ? `${numPages} página${numPages > 1 ? "s" : ""}` : null, processingTime ? `procesado en ${processingTime}` : null]
+            <p className="text-sm font-semibold truncate" style={{ color: "#1a1410" }}>{fileName ?? "documento.pdf"}</p>
+            <p className="text-xs mt-0.5" style={{ color: "#847a6f" }}>
+              {[fileSize, numPages > 0 ? `${numPages} página${numPages > 1 ? "s" : ""}` : null, processingTime ? `subido hace ${processingTime}` : null]
                 .filter(Boolean)
                 .join(" · ")}
+              {modelUsed && (
+                <> · <span style={{ color: "#f57a26" }}>extraído con {modelUsed}</span></>
+              )}
             </p>
           </div>
-          {modelUsed && (
-            <span className="shrink-0 text-[10px] font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground">
-              {modelUsed}
-            </span>
-          )}
         </div>
-
-        <div className="flex items-center gap-2">
+        {/* Right: action buttons */}
+        <div className="flex items-center gap-1.5 shrink-0">
           {onReprocess && (
-            <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5" onClick={onReprocess}>
-              ✦ Reprocesar con IA
-            </Button>
+            <button
+              type="button"
+              onClick={onReprocess}
+              className="flex items-center gap-1.5 text-xs px-3 rounded-[10px] transition-colors"
+              style={{ border: "1px solid #ddd4c4", background: "transparent", color: "#4a423b", height: 32 }}
+              onMouseEnter={e => (e.currentTarget.style.background = "#f3eee6")}
+              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+            >
+              + Reprocesar con IA
+            </button>
           )}
           {onDownload && (
-            <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5" onClick={onDownload}>
-              <Download className="size-3" /> Descargar PDF
-            </Button>
+            <button
+              type="button"
+              onClick={onDownload}
+              className="flex items-center gap-1.5 text-xs px-3 rounded-[10px] transition-colors"
+              style={{ border: "1px solid #ddd4c4", background: "transparent", color: "#4a423b", height: 32 }}
+              onMouseEnter={e => (e.currentTarget.style.background = "#f3eee6")}
+              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+            >
+              ↓ Descargar PDF
+            </button>
           )}
         </div>
       </div>

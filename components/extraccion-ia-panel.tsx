@@ -46,8 +46,6 @@ interface Props {
   loading?:    boolean
   datos?:      DatosExtraidos
   onConfirmar: (values: PedidoFormValues) => void
-  onDescartar: () => void
-  confirming?: boolean
 }
 
 /* ── Inline input styled to match mockup ── */
@@ -122,7 +120,7 @@ export function ExtraccionIaPanel({ loading, datos, onConfirmar, onDescartar, co
   if (!datos) return null
 
   return (
-    <form onSubmit={handleSubmit(onConfirmar)} className="flex flex-col h-full gap-0">
+    <form id="pedido-form" onSubmit={handleSubmit(onConfirmar)} className="flex flex-col h-full gap-0">
 
       {/* Header */}
       <div className="flex items-center gap-2 pb-4" style={{ borderBottom: "1px solid #ebe4d8" }}>
@@ -241,30 +239,6 @@ export function ExtraccionIaPanel({ loading, datos, onConfirmar, onDescartar, co
         )}
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-2 pt-4" style={{ borderTop: "1px solid #ebe4d8" }}>
-        <button
-          type="button"
-          onClick={onDescartar}
-          disabled={confirming}
-          className="flex-1 py-2 text-sm font-medium rounded-[10px] transition-colors"
-          style={{ border: "1px solid #ebe4d8", background: "#ffffff", color: "#4a423b" }}
-          onMouseEnter={e => (e.currentTarget.style.background = "#f3eee6")}
-          onMouseLeave={e => (e.currentTarget.style.background = "#ffffff")}
-        >
-          Descartar
-        </button>
-        <button
-          type="submit"
-          disabled={confirming}
-          className="flex-1 py-2 text-sm font-medium rounded-[10px] transition-colors"
-          style={{ background: confirming ? "#ddd4c4" : "#f57a26", color: "#ffffff", cursor: confirming ? "not-allowed" : "pointer" }}
-          onMouseEnter={e => { if (!confirming) (e.currentTarget as HTMLElement).style.background = "#d96017" }}
-          onMouseLeave={e => { if (!confirming) (e.currentTarget as HTMLElement).style.background = "#f57a26" }}
-        >
-          {confirming ? "Guardando…" : "✓ Confirmar pedido"}
-        </button>
-      </div>
     </form>
   )
 }
