@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { FileText, ShoppingBag, History, Settings, LogOut, Menu, X } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { clearAuth, getCurrentUser } from "@/lib/auth-simple"
 
@@ -17,8 +17,10 @@ const navEmpleado = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname   = usePathname()
   const router     = useRouter()
-  const user       = getCurrentUser()
+  const [user, setUser] = useState<ReturnType<typeof getCurrentUser>>(null)
   const [open, setOpen] = useState(false)
+
+  useEffect(() => { setUser(getCurrentUser()) }, [])
 
   const nav = navEmpleado
 
@@ -66,7 +68,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Nav */}
       <nav className="flex-1 flex flex-col gap-0.5">
         {nav.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || (href !== "/empleado/pedidos" && pathname.startsWith(href))
+          const active = pathname === href ||
+            (href === "/empleado/pedidos"
+              ? pathname.startsWith("/empleado/pedidos/") && pathname !== "/empleado/pedidos/nuevo"
+              : pathname.startsWith(href))
           return (
             <Link
               key={href}

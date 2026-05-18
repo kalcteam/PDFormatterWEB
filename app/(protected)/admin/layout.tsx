@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Users, Download, History, Settings, LogOut, Menu, X, ShieldCheck, FileText, ShoppingBag, LayoutList } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { clearAuth, getCurrentUser } from "@/lib/auth-simple"
 
 const NAV_PEDIDOS = [
@@ -22,7 +22,9 @@ const NAV_ADMIN = [
 function AdminSidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
   const router   = useRouter()
-  const user     = getCurrentUser()
+  const [user, setUser] = useState<ReturnType<typeof getCurrentUser>>(null)
+
+  useEffect(() => { setUser(getCurrentUser()) }, [])
 
   const initials = user?.nombre
     ? user.nombre.split(" ").map((n: string) => n[0]).slice(0, 2).join("").toUpperCase()
@@ -67,7 +69,10 @@ function AdminSidebar({ onClose }: { onClose?: () => void }) {
             <div key={`sep-${i}`} style={{ height: 1, background: "rgba(235, 228, 216, 0.6)", margin: "6px 12px" }} />
           )
           const { href, label, icon: Icon } = item
-          const active = pathname === href || (href !== "/admin/pedidos" && pathname.startsWith(href + "/"))
+          const active = pathname === href ||
+            (href === "/admin/pedidos"
+              ? pathname.startsWith("/admin/pedidos/") && pathname !== "/admin/pedidos/nuevo"
+              : pathname.startsWith(href + "/"))
           return (
             <Link
               key={href}

@@ -4,7 +4,8 @@ import { useState, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Upload, FileText, FlaskConical } from "lucide-react"
 import { toast } from "sonner"
-import { PdfViewer } from "@/components/pdf-viewer"
+import dynamic from "next/dynamic"
+const PdfViewer = dynamic(() => import("@/components/pdf-viewer").then(m => m.PdfViewer), { ssr: false })
 import { ExtraccionIaPanel, type DatosExtraidos, type PedidoFormValues } from "@/components/extraccion-ia-panel"
 import { getToken } from "@/lib/auth-simple"
 
@@ -40,6 +41,7 @@ export function NuevoPedidoView({ basePath }: Props) {
 
   const [estado, setEstado] = useState<EstadoPantalla>("idle")
   const [pdfFile, setPdfFile] = useState<File | null>(null)
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [pedidoId, setPedidoId] = useState<number | null>(null)
   const [datos, setDatos] = useState<DatosExtraidos | null>(null)
   const [processingTime, setProcessingTime] = useState<string | null>(null)
@@ -47,27 +49,28 @@ export function NuevoPedidoView({ basePath }: Props) {
 
   async function procesarPdf(file: File) {
     setPdfFile(file)
+    // Create URL before fetch consumes the ArrayBuffer
+    const url = URL.createObjectURL(file)
+    setPdfUrl(url)
     setEstado("uploading")
     const formData = new FormData()
-    formData.append("pdf_file", file)
-    const token = getToken()
+    formData.append("pdf", file)
     const start = Date.now()
     try {
       setEstado("processing")
-      const res = await fetch("/api/pedidos", {
+      const res = await fetch("/api/pedidos/extraer", {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       })
       const json = await res.json()
-      if (!res.ok || !json.success) {
+      if (!res.ok) {
         toast.error(json.error ?? "Error al procesar el PDF")
         setEstado("idle")
         return
       }
       setProcessingTime(`${((Date.now() - start) / 1000).toFixed(1)}s`)
-      setPedidoId(json.data.id)
-      setDatos(json.data)
+      setPedidoId(Date.now()) // temp id until backend exists
+      setDatos(json)
       setEstado("review")
     } catch {
       toast.error("Error de conexión al procesar el PDF")
@@ -112,7 +115,8 @@ export function NuevoPedidoView({ basePath }: Props) {
   }
 
   function handleDescartar() {
-    setPdfFile(null); setDatos(null); setPedidoId(null); setProcessingTime(null); setEstado("idle")
+    if (pdfUrl) URL.revokeObjectURL(pdfUrl)
+    setPdfFile(null); setPdfUrl(null); setDatos(null); setPedidoId(null); setProcessingTime(null); setEstado("idle")
   }
 
   async function cargarMock() {
@@ -183,7 +187,7 @@ export function NuevoPedidoView({ basePath }: Props) {
               )}
             </div>
           ) : (
-            <PdfViewer file={pdfFile} fileName={pdfFile.name} fileSize={fileSize} modelUsed="GPT-4o" processingTime={processingTime ?? undefined} onDownload={() => { const url = URL.createObjectURL(pdfFile); const a = document.createElement("a"); a.href = url; a.download = pdfFile.name; a.click(); URL.revokeObjectURL(url) }} onReprocess={() => procesarPdf(pdfFile)} className="flex-1" />
+            <PdfViewer file={pdfUrl ?? pdfFile} fileName={pdfFile.name} fileSize={fileSize} modelUsed="Llama 3.3 70B (Groq)" processingTime={processingTime ?? undefined} onDownload={() => { const url = pdfUrl ?? URL.createObjectURL(pdfFile); const a = document.createElement("a"); a.href = url; a.download = pdfFile.name; a.click(); if (!pdfUrl) URL.revokeObjectURL(url) }} onReprocess={() => procesarPdf(pdfFile)} className="flex-1" />
           )}
         </div>
 
